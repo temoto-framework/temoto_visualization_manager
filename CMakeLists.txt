@@ -6,11 +6,13 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED
   temoto_core
   temoto_er_manager
+  temoto_robot_manager
   roscpp
   std_msgs
   message_generation
   message_runtime
   rviz_plugin_manager
+  cmake_modules
 )
 
 add_service_files(FILES
@@ -26,7 +28,14 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES
-  CATKIN_DEPENDS roscpp std_msgs rviz_plugin_manager temoto_core temoto_er_manager
+  CATKIN_DEPENDS 
+    roscpp 
+    std_msgs
+    cmake_modules
+    rviz_plugin_manager 
+    temoto_core 
+    temoto_er_manager
+    temoto_robot_manager
   DEPENDS 
 )
 

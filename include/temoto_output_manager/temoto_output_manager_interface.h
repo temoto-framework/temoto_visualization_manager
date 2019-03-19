@@ -1,9 +1,9 @@
 #include "temoto_core/common/temoto_id.h"
 #include "temoto_core/common/base_subsystem.h"
-#include "temoto_nlp/base_task/base_task.h"
-#include "temoto_output_manager/temoto_output_manager_services.h"
-#include "robot_manager/robot_manager_services.h"
 #include "temoto_core/rmp/resource_manager.h"
+#include "temoto_nlp/base_task/base_task.h"
+#include "temoto_robot_manager/robot_manager_services.h"
+#include "temoto_output_manager/temoto_output_manager_services.h"
 #include "temoto_output_manager/LoadRvizPlugin.h"
 #include <sstream>
 #include <fstream>
