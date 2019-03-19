@@ -211,20 +211,20 @@ public:
   std::string getRobotInfo(const std::string& robot_name)
   {
     std::string info;
-    // ros::ServiceClient rm_client =
-    //     nh_.serviceClient<temoto_2::RobotGetVizInfo>(robot_manager::srv_name::SERVER_GET_VIZ_INFO);
-    // temoto_2::RobotGetVizInfo info_srvc;
-    // info_srvc.request.robot_name = robot_name;
-    // if (rm_client.call(info_srvc))
-    // {
-    //   TEMOTO_DEBUG(" GET ROBOT INFO SUCESSFUL. Response:");
-    //   TEMOTO_DEBUG_STREAM(info_srvc.response);
-    //   info = info_srvc.response.info;
-    // }
-    // else
-    // {
-    //   throw CREATE_ERROR(temoto_core::error::Code::SERVICE_REQ_FAIL, "Failed to obtain visualization info from robot manager.");
-    // }
+    ros::ServiceClient rm_client =
+        nh_.serviceClient<temoto_robot_manager::RobotGetVizInfo>(robot_manager::srv_name::SERVER_GET_VIZ_INFO);
+    temoto_robot_manager::RobotGetVizInfo info_srvc;
+    info_srvc.request.robot_name = robot_name;
+    if (rm_client.call(info_srvc))
+    {
+      TEMOTO_DEBUG(" GET ROBOT INFO SUCESSFUL. Response:");
+      TEMOTO_DEBUG_STREAM(info_srvc.response);
+      info = info_srvc.response.info;
+    }
+    else
+    {
+      throw CREATE_ERROR(temoto_core::error::Code::SERVICE_REQ_FAIL, "Failed to obtain visualization info from robot manager.");
+    }
     return info;
   }
 
