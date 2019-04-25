@@ -42,7 +42,7 @@ public:
     initializeBase(task);
     log_group_ = "interfaces." + task->getPackageName();
 
-    name_ = task->getName() + "/temoto_output_manager_interface";
+    name_ = task->getName() + "/output_manager_interface";
     resource_manager_ = std::unique_ptr<temoto_core::rmp::ResourceManager<OutputManagerInterface>>(
         new temoto_core::rmp::ResourceManager<OutputManagerInterface>(name_, this));
     //    resource_manager_->registerStatusCb(&OutputManagerInterface::statusInfoCb);
