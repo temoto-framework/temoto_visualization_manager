@@ -1,6 +1,6 @@
 #include "temoto_core/common/temoto_id.h"
 #include "temoto_core/common/base_subsystem.h"
-#include "temoto_core/rmp/resource_manager.h"
+#include "temoto_core/trr/resource_registrar.h"
 #include "temoto_nlp/base_task/base_task.h"
 #include "temoto_robot_manager/robot_manager_services.h"
 #include "temoto_output_manager/temoto_output_manager_services.h"
@@ -43,9 +43,9 @@ public:
     log_group_ = "interfaces." + task->getPackageName();
 
     name_ = task->getName() + "/output_manager_interface";
-    resource_manager_ = std::unique_ptr<temoto_core::rmp::ResourceManager<OutputManagerInterface>>(
-        new temoto_core::rmp::ResourceManager<OutputManagerInterface>(name_, this));
-    //    resource_manager_->registerStatusCb(&OutputManagerInterface::statusInfoCb);
+    resource_registrar_ = std::unique_ptr<temoto_core::trr::ResourceRegistrar<OutputManagerInterface>>(
+        new temoto_core::trr::ResourceRegistrar<OutputManagerInterface>(name_, this));
+    //    resource_registrar_->registerStatusCb(&OutputManagerInterface::statusInfoCb);
   }
 
   /**
@@ -68,7 +68,7 @@ public:
     // Call the server
     try
     {
-      resource_manager_->template call<temoto_output_manager::LoadRvizPlugin>(
+      resource_registrar_->template call<temoto_output_manager::LoadRvizPlugin>(
           srv_name::RVIZ_MANAGER, srv_name::RVIZ_SERVER, load_srv);
     }
     catch(temoto_core::error::ErrorStack& error_stack)
@@ -108,7 +108,7 @@ public:
       }
 
       // do the unloading
-      resource_manager_->unloadClientResource(cur_plugin_it->response.rmp.resource_id);
+      resource_registrar_->unloadClientResource(cur_plugin_it->response.trr.resource_id);
       plugins_.erase(cur_plugin_it);
       plugin_unloaded = true;
     }
@@ -269,28 +269,28 @@ public:
   //    TEMOTO_DEBUG_STREAM(srv.request);
   //    // if any resource should fail, just unload it and try again
   //    // there is a chance that sensor manager gives us better sensor this time
-  //    if (srv.request.status_code == temoto_core::rmp::status_codes::FAILED)
+  //    if (srv.request.status_code == temoto_core::trr::status_codes::FAILED)
   //    {
   //      TEMOTO_WARN("Output manager interface detected a sensor failure. Unloading and "
   //                                "trying again");
   //      auto sens_it = std::find_if(allocated_sensors_.begin(), allocated_sensors_.end(),
   //                                  [&](const temoto_2::LoadSensor& sens) -> bool {
-  //                                    return sens.response.rmp.resource_id ==
+  //                                    return sens.response.trr.resource_id ==
   //                                    srv.request.resource_id;
   //                                  });
   //      if (sens_it != allocated_sensors_.end())
   //      {
   //        TEMOTO_DEBUG("Unloading");
-  //        resource_manager_->unloadClientResource(sens_it->response.rmp.resource_id);
+  //        resource_registrar_->unloadClientResource(sens_it->response.trr.resource_id);
   //        TEMOTO_DEBUG("Asking the same sensor again");
-  //        if (!resource_manager_->template call<temoto_2::LoadSensor>(
+  //        if (!resource_registrar_->template call<temoto_2::LoadSensor>(
   //                sensor_manager::srv_name::MANAGER, sensor_manager::srv_name::SERVER, *sens_it))
   //        {
   //          throw CREATE_ERROR(temoto_core::error::Code::SERVICE_REQ_FAIL, "Failed to call service");
   //        }
   //
   //        // If the request was fulfilled, then add the srv to the list of allocated sensors
-  //        if (sens_it->response.rmp.code == 0)
+  //        if (sens_it->response.trr.code == 0)
   //        {
   //          // @TODO: send somehow topic to whoever is using this thing
   //          // or do topic remapping
@@ -326,7 +326,7 @@ private:
 
   temoto_core::temoto_id::ID id_ = temoto_core::temoto_id::UNASSIGNED_ID;
 
-  std::unique_ptr<temoto_core::rmp::ResourceManager<OutputManagerInterface>> resource_manager_;
+  std::unique_ptr<temoto_core::trr::ResourceRegistrar<OutputManagerInterface>> resource_registrar_;
 
   std::vector<temoto_output_manager::LoadRvizPlugin> plugins_;
 
@@ -338,7 +338,7 @@ private:
    */
   void validateInterface(std::string& log_prefix)
   {
-    if (!resource_manager_)
+    if (!resource_registrar_)
     {
       throw CREATE_ERROR(temoto_core::error::Code::UNINITIALIZED, "Interface is not initalized.");
     }

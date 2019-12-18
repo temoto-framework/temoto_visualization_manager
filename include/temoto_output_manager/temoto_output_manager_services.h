@@ -2,7 +2,7 @@
 #define OUTPUT_MANAGER_SERVICES_H
 
 #include <string>
-#include "temoto_core/rmp/resource_manager_services.h"
+#include "temoto_core/trr/resource_registrar_services.h"
 #include "temoto_output_manager/LoadRvizPlugin.h"
 
 namespace temoto_output_manager

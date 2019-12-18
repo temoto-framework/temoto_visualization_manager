@@ -8,7 +8,7 @@
 #include "temoto_output_manager/rviz_manager/plugin_info.h"
 #include "temoto_output_manager/temoto_output_manager_services.h"
 #include "temoto_er_manager/temoto_er_manager_services.h"
-#include "temoto_core/rmp/resource_manager.h"
+#include "temoto_core/trr/resource_registrar.h"
 #include "rviz_plugin_manager/PluginLoad.h"
 #include "rviz_plugin_manager/PluginUnload.h"
 #include "rviz_plugin_manager/PluginGetConfig.h"
@@ -54,7 +54,7 @@ private:
 
   std::map<long, temoto_core::temoto_id::ID> active_requests_;
 
-  temoto_core::rmp::ResourceManager<RvizManager> resource_manager_;
+  temoto_core::trr::ResourceRegistrar<RvizManager> resource_registrar_;
 
   ros::NodeHandle nh_;
 

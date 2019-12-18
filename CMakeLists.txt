@@ -50,4 +50,4 @@ add_executable(temoto_output_manager
   src/rviz_manager/plugin_info.cpp
 )
 add_dependencies(temoto_output_manager ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
-target_link_libraries(temoto_output_manager ${catkin_LIBRARIES} temoto_core_components)
+target_link_libraries(temoto_output_manager ${catkin_LIBRARIES})
