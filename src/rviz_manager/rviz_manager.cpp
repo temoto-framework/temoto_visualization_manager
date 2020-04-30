@@ -12,11 +12,6 @@ RvizManager::RvizManager()
   log_group_ = "rviz_manager";
   error_handler_ = temoto_core::error::ErrorHandler(subsystem_code_, log_group_);
 
-  //\TODO:Remove, deprecated
-  log_class_ = class_name_;
-  log_subsys_ = subsystem_name_;
-  std::string prefix = generateLogPrefix(__func__);
-
   // Set up server for loading rviz plugins
   resource_registrar_.addServer<temoto_output_manager::LoadRvizPlugin>(srv_name::RVIZ_SERVER,
                                                         &RvizManager::LoadRvizPluginCb,
@@ -49,6 +44,8 @@ RvizManager::RvizManager()
   plugin_info_handler_.plugins_.emplace_back("path", "rviz/Path", "Path plugin", "");
   plugin_info_handler_.plugins_.emplace_back("robot_model", "rviz/RobotModel", "Robot model plugin", "");
   plugin_info_handler_.plugins_.emplace_back("manipulation", "moveit_rviz_plugin/MotionPlanning", "Moveit Motion Planning", "");
+
+  TEMOTO_INFO_STREAM("RViz Manager is good to go.");
 }
 
 /* * * * * * * * * * * * * * * * *
@@ -56,16 +53,13 @@ RvizManager::RvizManager()
  * * * * * * * * * * * * * * * * */
 void RvizManager::runRviz()
 {
-  // Name of the method, used for making debugging a bit simpler
-  std::string prefix = temoto_core::common::generateLogPrefix(log_subsys_, log_class_, __func__);
-
   // Create the message and fill out the request part
   temoto_er_manager::LoadExtResource msg;
   msg.request.action = temoto_er_manager::action::ROS_EXECUTE;
   msg.request.package_name = "rviz_plugin_manager";
   msg.request.executable = "rviz_plugin_manager.launch";
 
-  TEMOTO_INFO("%s Requesting to launch rviz ...", prefix.c_str());
+  TEMOTO_INFO("Requesting to launch rviz ...");
 
   try
   {
@@ -74,7 +68,7 @@ void RvizManager::runRviz()
                                                   temoto_er_manager::srv_name::SERVER, msg);
     if (msg.response.trr.code == 0)
     {
-      TEMOTO_INFO("%s Rviz launched succesfully: %s", prefix.c_str(),
+      TEMOTO_INFO("Rviz launched succesfully: %s",
                   msg.response.trr.message.c_str());
 
       // Wait until rviz_plugin_manager clients become active or throw an error on timeout
@@ -84,8 +78,7 @@ void RvizManager::runRviz()
              ros::Time::now() < timeout)
       {
         ros::Duration diff = timeout - ros::Time::now();
-        TEMOTO_DEBUG("%s Waiting for rviz to start (timeout in %.1f sec).", prefix.c_str(),
-                     diff.toSec());
+        TEMOTO_DEBUG("Waiting for rviz to start (timeout in %.1f sec).", diff.toSec());
         ros::Duration(1).sleep();
       }
 
@@ -93,7 +86,7 @@ void RvizManager::runRviz()
       {
         throw CREATE_ERROR(temoto_core::error::Code::RVIZ_OPEN_FAIL, "Failed to launch rviz plugin manager: Timeout reached.");
       }
-      TEMOTO_DEBUG("%s All rviz_plugin_manager services connected.", prefix.c_str());
+      TEMOTO_DEBUG("All rviz_plugin_manager services connected.");
     }
     else
     {
@@ -113,16 +106,12 @@ void RvizManager::runRviz()
 
 bool RvizManager::loadPluginRequest(rviz_plugin_manager::PluginLoad& load_plugin_srv)
 {
-  // Name of the method, used for making debugging a bit simpler
-  std::string prefix = temoto_core::common::generateLogPrefix(log_subsys_, log_class_, __func__);
-
   // Send the plugin request
   if (load_plugin_client_.call(load_plugin_srv))
   {
     if (load_plugin_srv.response.code == 0)
     {
-      TEMOTO_INFO("%s Request successful: %s", prefix.c_str(),
-                  load_plugin_srv.response.message.c_str());
+      TEMOTO_INFO("Request successful: %s", load_plugin_srv.response.message.c_str());
       return true;
     }
     else
@@ -142,16 +131,12 @@ bool RvizManager::loadPluginRequest(rviz_plugin_manager::PluginLoad& load_plugin
 
 bool RvizManager::unloadPluginRequest(rviz_plugin_manager::PluginUnload& unload_plugin_srv)
 {
-  // Name of the method, used for making debugging a bit simpler
-  std::string prefix = temoto_core::common::generateLogPrefix(log_subsys_, log_class_, __func__);
-
   // Send the plugin request
   if (unload_plugin_client_.call(unload_plugin_srv))
   {
     if (unload_plugin_srv.response.code == 0)
     {
-      TEMOTO_INFO("%s Request successful: %s", prefix.c_str(),
-                  unload_plugin_srv.response.message.c_str());
+      TEMOTO_INFO("Request successful: %s", unload_plugin_srv.response.message.c_str());
       return true;
     }
     else
@@ -172,16 +157,12 @@ bool RvizManager::unloadPluginRequest(rviz_plugin_manager::PluginUnload& unload_
 bool RvizManager::getPluginConfigRequest(
     rviz_plugin_manager::PluginGetConfig& get_plugin_config_srv)
 {
-  // Name of the method, used for making debugging a bit simpler
-  std::string prefix = temoto_core::common::generateLogPrefix(log_subsys_, log_class_, __func__);
-
   // Send the plugin request
   if (get_plugin_config_client_.call(get_plugin_config_srv))
   {
     if (get_plugin_config_srv.response.code == 0)
     {
-      TEMOTO_INFO("%s Request successful: %s", prefix.c_str(),
-                  get_plugin_config_srv.response.message.c_str());
+      TEMOTO_INFO("Request successful: %s", get_plugin_config_srv.response.message.c_str());
       return true;
     }
     else
@@ -204,16 +185,12 @@ bool RvizManager::getPluginConfigRequest(
 bool RvizManager::setPluginConfigRequest(
     rviz_plugin_manager::PluginSetConfig& set_plugin_config_srv)
 {
-  // Name of the method, used for making debugging a bit simpler
-  std::string prefix = temoto_core::common::generateLogPrefix(log_subsys_, log_class_, __func__);
-
   // Send the plugin request
   if (set_plugin_config_client_.call(set_plugin_config_srv))
   {
     if (set_plugin_config_srv.response.code == 0)
     {
-      TEMOTO_INFO("%s Request successful: %s", prefix.c_str(),
-                  set_plugin_config_srv.response.message.c_str());
+      TEMOTO_INFO("Request successful: %s", set_plugin_config_srv.response.message.c_str());
       return true;
     }
     else
@@ -236,10 +213,7 @@ bool RvizManager::setPluginConfigRequest(
 void RvizManager::LoadRvizPluginCb(temoto_output_manager::LoadRvizPlugin::Request& req,
                                    temoto_output_manager::LoadRvizPlugin::Response& res)
 {
-  // Name of the method, used for making debugging a bit simpler
-  std::string prefix = temoto_core::common::generateLogPrefix(log_subsys_, log_class_, __func__);
-
-  TEMOTO_INFO("%s Received a new %s request", prefix.c_str(), srv_name::RVIZ_SERVER.c_str());
+  TEMOTO_INFO_STREAM("Received a new %s request: " << srv_name::RVIZ_SERVER);
   TEMOTO_INFO_STREAM(req);
 
   try
@@ -306,10 +280,7 @@ void RvizManager::LoadRvizPluginCb(temoto_output_manager::LoadRvizPlugin::Reques
 void RvizManager::unloadRvizPluginCb(temoto_output_manager::LoadRvizPlugin::Request& req,
                                      temoto_output_manager::LoadRvizPlugin::Response& res)
 {
-  // Name of the method, used for making debugging a bit simpler
-  std::string prefix = temoto_core::common::generateLogPrefix(log_subsys_, log_class_, __func__);
-
-  TEMOTO_INFO("%s Received an 'unload' request to ID: '%ld'.", prefix.c_str(), res.trr.resource_id);
+  TEMOTO_INFO("Received an 'unload' request to ID: '%ld'.", res.trr.resource_id);
 
   // Default the response code to 0
   res.trr.code = 0;

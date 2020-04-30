@@ -1,5 +1,24 @@
-#ifndef RVIZ_MANAGER_H
-#define RVIZ_MANAGER_H
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Copyright 2019 TeMoto Telerobotics
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+/* Author: Veiko Vunder */
+/* Author: Robert Valner */
+
+#ifndef TEMOTO_OUTPUT_MANAGER__RVIZ_MANAGER_H
+#define TEMOTO_OUTPUT_MANAGER__RVIZ_MANAGER_H
 
 #include "temoto_core/common/request_container.h"
 #include "temoto_core/common/temoto_id.h"
@@ -13,8 +32,6 @@
 #include "rviz_plugin_manager/PluginUnload.h"
 #include "rviz_plugin_manager/PluginGetConfig.h"
 #include "rviz_plugin_manager/PluginSetConfig.h"
-
-
 //#include "temoto_output_manager/stopAllocatedServices.h"
 
 namespace temoto_output_manager
@@ -29,7 +46,7 @@ public:
 
   const std::string& getName() const
   {
-    return log_subsys_;
+    return subsystem_name_;
   }
 
 private:
@@ -67,8 +84,6 @@ private:
   ros::ServiceClient get_plugin_config_client_;
 
   PluginInfoHandler plugin_info_handler_;
-
-  std::string log_class_, log_subsys_, log_group_;
 };
 
 }  // namespace rviz_manager
