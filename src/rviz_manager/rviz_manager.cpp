@@ -39,6 +39,7 @@ RvizManager::RvizManager()
   plugin_info_handler_.plugins_.emplace_back("camera", "rviz_textured_sphere/SphereDisplay",
                                              "Temoto camera");
   plugin_info_handler_.plugins_.emplace_back("image", "rviz/Image", "Temoto Image", "sensor_msgs/Image");
+  plugin_info_handler_.plugins_.emplace_back("compressed_image", "rviz/Image", "Temoto Compressed Image", "sensor_msgs/CompressedImage");
   plugin_info_handler_.plugins_.emplace_back("depth image", "rviz/PointCloud2", "Temoto Pointcloud", "sensor_msgs/PointCloud2");
   plugin_info_handler_.plugins_.emplace_back("laser scan", "rviz/LaserScan", "Temoto Laser Scan", "sensor_msgs/LaserScan");
   plugin_info_handler_.plugins_.emplace_back("path", "rviz/Path", "Path plugin", "");
