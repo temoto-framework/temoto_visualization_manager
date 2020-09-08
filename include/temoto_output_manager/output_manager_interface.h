@@ -72,9 +72,33 @@ public:
    * @param topic
    * @param display_config
    */
-  void showInRviz(std::string display_type, std::string topic = "", std::string display_config = "")
+  void showInRviz(std::string display_type
+  , std::string topic = ""
+  , std::string display_config = ""
+  , std::string temoto_namespace = "")
   {
     validateInterface();
+
+    if(temoto_namespace.empty())
+    {
+      temoto_namespace = temoto_core::common::getTemotoNamespace();
+    }
+
+    #ifdef enable_tracing
+    std::unique_ptr<opentracing::Span> tracing_span;
+
+    if (resource_registrar_->statusCallbackActive())
+    {
+      temoto_core::StringMap parent_context = resource_registrar_->getStatusCallbackSpanContext();
+      TextMapCarrier carrier(parent_context);
+      auto span_context_maybe = TRACER->Extract(carrier);
+      tracing_span = TRACER->StartSpan(this->subsystem_name_ + "::" + __func__, {opentracing::ChildOf(span_context_maybe->get())});
+    }
+    else
+    {
+      tracing_span = TRACER->StartSpan(this->subsystem_name_ + "::" + __func__);
+    }
+    #endif
 
     temoto_output_manager::LoadRvizPlugin load_srv;
     load_srv.request.type = display_type;
@@ -84,8 +108,32 @@ public:
     // Call the server
     try
     {
-      resource_registrar_->template call<temoto_output_manager::LoadRvizPlugin>(
-          srv_name::RVIZ_MANAGER, srv_name::RVIZ_SERVER, load_srv);
+      #ifdef enable_tracing
+      /*
+       * If tracing is enabled:
+       * Propagate the context of the span to the invoked subroutines
+       * TODO: this segment of code will crash if the tracer is uninitialized
+       */ 
+      temoto_core::StringMap local_span_context;
+      TextMapCarrier carrier(local_span_context);
+      auto err = TRACER->Inject(tracing_span->context(), carrier);
+      
+      resource_registrar_->template call<temoto_output_manager::LoadRvizPlugin>(srv_name::RVIZ_MANAGER
+      , srv_name::RVIZ_SERVER
+      , load_srv
+      , temoto_core::trr::FailureBehavior::NONE
+      , temoto_namespace
+      , local_span_context);
+
+      #else
+      // If tracing is not enabled
+      resource_registrar_->template call<temoto_output_manager::LoadRvizPlugin>(srv_name::RVIZ_MANAGER
+      , srv_name::RVIZ_SERVER
+      , load_srv
+      , temoto_core::trr::FailureBehavior::NONE
+      , temoto_namespace);
+
+      #endif
     }
     catch(temoto_core::error::ErrorStack& error_stack)
     {
