@@ -16,7 +16,7 @@ catkin build
 The following launch file will launch:
 * **Process Manager**, which is used to launch RViz by the Visualization Manager
 * **Visualization Manager**
-* **Test node**, which loads couple of visualization plugins ([source code here](https://github.com/temoto-framework/temoto_visualization_manager/temoto_visualization_manager/src/examples/visualization_manager_test.cpp))
+* **Test node**, which loads couple of visualization plugins ([source code here](https://github.com/temoto-framework/temoto_visualization_manager/blob/main/temoto_visualization_manager/src/examples/visualization_manager_test.cpp))
 
 ``` bash
 roslaunch temoto_visualization_manager visualization_manager_test.launch
