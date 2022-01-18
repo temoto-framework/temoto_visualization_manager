@@ -7,7 +7,7 @@ is displayed via dynamically loadable RViz plugins. Thus data can be visualized 
 
 ``` bash
 cd catkin_ws/src
-git clone https://github.com/temoto-framework/temoto_visualization_manager
+git clone --recursive https://github.com/temoto-framework/temoto_visualization_manager
 cd ..
 catkin build
 ```
