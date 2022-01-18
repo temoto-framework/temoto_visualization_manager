@@ -1,4 +1,4 @@
-#include "temoto_output_manager/rviz_manager/plugin_info.h"
+#include "temoto_visualization_manager/plugin_info.h"
 
 
 /*

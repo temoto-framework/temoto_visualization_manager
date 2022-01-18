@@ -1,5 +1,5 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Copyright 2019 TeMoto Telerobotics
+ * Copyright 2019 TeMoto Framework
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,8 @@
  * limitations under the License.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/* Author: Veiko Vunder */
-
-#ifndef TEMOTO_OUTPUT_MANAGER__PLUGIN_INFO_H
-#define TEMOTO_OUTPUT_MANAGER__PLUGIN_INFO_H
+#ifndef TEMOTO_VISUALIZATION_MANAGER__PLUGIN_INFO_H
+#define TEMOTO_VISUALIZATION_MANAGER__PLUGIN_INFO_H
 
 #include <string>
 #include <vector>

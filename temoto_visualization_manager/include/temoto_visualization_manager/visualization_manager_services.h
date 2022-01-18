@@ -1,5 +1,5 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Copyright 2019 TeMoto Telerobotics
+ * Copyright 2019 TeMoto Framework
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,24 @@
  * limitations under the License.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/* Author: Veiko Vunder */
-
-#ifndef TEMOTO_OUTPUT_MANAGER__OUTPUT_MANAGER_SERVICES_H
-#define TEMOTO_OUTPUT_MANAGER__OUTPUT_MANAGER_SERVICES_H
+#ifndef TEMOTO_VISUALIZATION_MANAGER__VISUALIZATION_MANAGER_SERVICES_H
+#define TEMOTO_VISUALIZATION_MANAGER__VISUALIZATION_MANAGER_SERVICES_H
 
 #include <string>
-#include "temoto_core/trr/resource_registrar_services.h"
-#include "temoto_output_manager/LoadRvizPlugin.h"
+#include "temoto_visualization_manager/LoadRvizPlugin.h"
 
-namespace temoto_output_manager
+namespace temoto_visualization_manager
 {
 	namespace srv_name
 	{
-		//const std::string MANAGER = "temoto_output_manager";
-		const std::string RVIZ_MANAGER = "rviz_manager";
+		//const std::string MANAGER = "temoto_visualization_manager";
+		const std::string RVIZ_MANAGER = "temoto_visualization_manager";
 		const std::string RVIZ_SERVER = "load_rviz_plugin";
 	}
 }
 
-static bool operator==(const temoto_output_manager::LoadRvizPlugin::Request& r1,
-		const temoto_output_manager::LoadRvizPlugin::Request& r2)
+static bool operator==(const temoto_visualization_manager::LoadRvizPlugin::Request& r1,
+		const temoto_visualization_manager::LoadRvizPlugin::Request& r2)
 {
 	return(
 			r1.type == r2.type &&

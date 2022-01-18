@@ -1,5 +1,5 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Copyright 2019 TeMoto Telerobotics
+ * Copyright 2019 TeMoto Framework
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,40 +14,28 @@
  * limitations under the License.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/* Author: Veiko Vunder */
-/* Author: Robert Valner */
+#ifndef TEMOTO_VISUALIZATION_MANAGER__RVIZ_MANAGER_H
+#define TEMOTO_VISUALIZATION_MANAGER__RVIZ_MANAGER_H
 
-#ifndef TEMOTO_OUTPUT_MANAGER__RVIZ_MANAGER_H
-#define TEMOTO_OUTPUT_MANAGER__RVIZ_MANAGER_H
-
-#include "temoto_core/common/request_container.h"
-#include "temoto_core/common/temoto_id.h"
-#include "temoto_core/common/base_subsystem.h"
-#include "temoto_output_manager/LoadRvizPlugin.h"
-#include "temoto_output_manager/rviz_manager/plugin_info.h"
-#include "temoto_output_manager/temoto_output_manager_services.h"
-#include "temoto_er_manager/temoto_er_manager_services.h"
-#include "temoto_core/trr/resource_registrar.h"
+#include "rr/ros1_resource_registrar.h"
+#include "temoto_visualization_manager/LoadRvizPlugin.h"
+#include "temoto_visualization_manager/plugin_info.h"
+#include "temoto_visualization_manager/visualization_manager_services.h"
 #include "rviz_plugin_manager/PluginLoad.h"
 #include "rviz_plugin_manager/PluginUnload.h"
 #include "rviz_plugin_manager/PluginGetConfig.h"
 #include "rviz_plugin_manager/PluginSetConfig.h"
-//#include "temoto_output_manager/stopAllocatedServices.h"
+#include "temoto_er_manager/temoto_er_manager_services.h"
 
-namespace temoto_output_manager
+namespace temoto_visualization_manager
 {
 
-class RvizManager : public temoto_core::BaseSubsystem
+class VisualizationManager
 {
 public:
-  RvizManager();
+  VisualizationManager();
 
-  RvizManager(std::string path_to_default_conf);
-
-  const std::string& getName() const
-  {
-    return subsystem_name_;
-  }
+  VisualizationManager(std::string path_to_default_conf);
 
 private:
 
@@ -61,17 +49,21 @@ private:
 
   bool setPluginConfigRequest(rviz_plugin_manager::PluginSetConfig& set_plugin_config_srv);
 
-  void LoadRvizPluginCb(temoto_output_manager::LoadRvizPlugin::Request& req,
-                        temoto_output_manager::LoadRvizPlugin::Response& res);
+  void loadRvizPluginCb(temoto_visualization_manager::LoadRvizPlugin::Request& req,
+                        temoto_visualization_manager::LoadRvizPlugin::Response& res);
 
-  void unloadRvizPluginCb(temoto_output_manager::LoadRvizPlugin::Request& req,
-                          temoto_output_manager::LoadRvizPlugin::Response& res);
+  void unloadRvizPluginCb(temoto_visualization_manager::LoadRvizPlugin::Request& req,
+                          temoto_visualization_manager::LoadRvizPlugin::Response& res);
+
+  void erStatusCb(temoto_er_manager::LoadExtResource srv_msg
+  , temoto_resource_registrar::Status status_msg);
 
   PluginInfo findPlugin(std::string plugin_type);
 
-  std::map<long, temoto_core::temoto_id::ID> active_requests_;
+  std::map<std::string, int> active_requests_;
 
-  temoto_core::trr::ResourceRegistrar<RvizManager> resource_registrar_;
+  temoto_resource_registrar::ResourceRegistrarRos1 resource_registrar_;
+  temoto_resource_registrar::Configuration rr_catalog_config_;
 
   ros::NodeHandle nh_;
 
@@ -86,6 +78,6 @@ private:
   PluginInfoHandler plugin_info_handler_;
 };
 
-}  // namespace rviz_manager
+}  // namespace visualization_manager
 
 #endif

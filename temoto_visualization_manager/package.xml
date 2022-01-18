@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>temoto_output_manager</name>
+  <name>temoto_visualization_manager</name>
   <version>0.0.0</version>
-  <description>The temoto_output_manager package</description>
+  <description>The temoto_visualization_manager package</description>
 
   <maintainer email="robert.valner@ut.ee">Robert Valner</maintainer>
   <license>Apache-2.0</license>
@@ -13,7 +13,7 @@
   <depend>cmake_modules</depend>
 	<depend>message_generation</depend>
   <depend>rviz_plugin_manager</depend>
-  <depend>temoto_core</depend>
   <depend>temoto_er_manager</depend>
+  <depend>temoto_resource_registrar</depend>
 
 </package>

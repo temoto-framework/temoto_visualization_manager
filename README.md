@@ -1,1 +1,0 @@
-# temoto_output_manager

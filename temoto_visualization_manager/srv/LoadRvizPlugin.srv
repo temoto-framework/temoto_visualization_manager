@@ -1,6 +1,3 @@
-# Remote Management Request
-temoto_core/RMPRequest trr
-
 # Rviz display plugin type
 string type
 
@@ -13,7 +10,7 @@ string topic
 # Plugin configuration XML string
 string config
 
+temoto_resource_registrar/TemotoRequestMetadata temoto_metadata
 ---
 
-# Remote Management Response
-temoto_core/RMPResponse trr
+temoto_resource_registrar/TemotoResponseMetadata temoto_metadata

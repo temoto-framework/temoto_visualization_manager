@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(temoto_output_manager)
+project(temoto_visualization_manager)
 
-add_compile_options(-std=c++11)
-option(TEMOTO_ENABLE_TRACING "Use tracer" OFF)
+add_compile_options(-std=c++14)
 
+option(TEMOTO_ENABLE_TRACING_ "Use tracer" OFF)
 if(TEMOTO_ENABLE_TRACING)
   add_compile_options(-Denable_tracing)
 endif()
 
 find_package(catkin REQUIRED
-  temoto_core
+  temoto_resource_registrar
   temoto_er_manager
   roscpp
   std_msgs
@@ -26,7 +26,7 @@ add_service_files(FILES
 generate_messages(
   DEPENDENCIES
   std_msgs
-  temoto_core
+  temoto_resource_registrar
 )
 
 catkin_package(
@@ -37,7 +37,7 @@ catkin_package(
     std_msgs
     cmake_modules
     rviz_plugin_manager 
-    temoto_core 
+    temoto_resource_registrar
     temoto_er_manager
   DEPENDS 
 )
@@ -47,20 +47,31 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(temoto_output_manager 
-  src/temoto_output_manager.cpp
-  src/rviz_manager/rviz_manager.cpp
-  src/rviz_manager/plugin_info.cpp
+add_executable(temoto_visualization_manager 
+  src/visualization_manager_node.cpp
+  src/visualization_manager.cpp
+  src/plugin_info.cpp
 )
-add_dependencies(temoto_output_manager
+add_dependencies(temoto_visualization_manager
   ${catkin_EXPORTED_TARGETS}
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
 )
-target_link_libraries(temoto_output_manager
+target_link_libraries(temoto_visualization_manager
   ${catkin_LIBRARIES}
 )
 
-install(TARGETS temoto_output_manager
+add_executable(visualization_manager_test 
+  src/examples/visualization_manager_test.cpp
+)
+add_dependencies(visualization_manager_test
+  ${catkin_EXPORTED_TARGETS}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+)
+target_link_libraries(visualization_manager_test
+  ${catkin_LIBRARIES}
+)
+
+install(TARGETS temoto_visualization_manager
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

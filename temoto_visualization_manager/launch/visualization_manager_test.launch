@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="temoto_namespace" default="my_temoto"/>
+  <env name="TEMOTO_NAMESPACE" value="$(arg temoto_namespace)" />
+
+  <group ns="$(arg temoto_namespace)">
+    <!-- Run the Process Manager (which is used to start RViz) -->
+    <node pkg="temoto_er_manager" 
+          type="temoto_er_manager" 
+          name="temoto_er_manager" 
+          output="screen"/>
+
+    <!-- Run the Visualzation Manager -->
+    <node pkg="temoto_visualization_manager" 
+          type="temoto_visualization_manager" 
+          name="temoto_visualization_manager" 
+          output="screen"/>
+
+    <!-- Run the test node -->
+    <node pkg="temoto_visualization_manager" 
+          type="visualization_manager_test" 
+          name="visualization_manager_test" 
+          output="screen"/>
+  </group>
+</launch>
