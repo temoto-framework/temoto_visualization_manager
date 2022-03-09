@@ -38,6 +38,7 @@ VisualizationManager::VisualizationManager()
    * TODO: This should be done via external xml file or a service request
    */
   plugin_info_handler_.plugins_.emplace_back("marker", "rviz/Marker");
+  plugin_info_handler_.plugins_.emplace_back("interactive_marker", "rviz/InteractiveMarkers", "Temoto marker");
   plugin_info_handler_.plugins_.emplace_back("camera", "rviz_textured_sphere/SphereDisplay", "Temoto camera");
   plugin_info_handler_.plugins_.emplace_back("image", "rviz/Image", "Temoto Image", "sensor_msgs/Image");
   plugin_info_handler_.plugins_.emplace_back("compressed_image", "rviz/Image", "Temoto Compressed Image", "sensor_msgs/CompressedImage");
@@ -46,6 +47,8 @@ VisualizationManager::VisualizationManager()
   plugin_info_handler_.plugins_.emplace_back("path", "rviz/Path", "Path plugin", "");
   plugin_info_handler_.plugins_.emplace_back("robot_model", "rviz/RobotModel", "Robot model plugin", "");
   plugin_info_handler_.plugins_.emplace_back("manipulation", "moveit_rviz_plugin/MotionPlanning", "Moveit Motion Planning", "");
+  plugin_info_handler_.plugins_.emplace_back("map", "rviz/Map", "Map");
+  plugin_info_handler_.plugins_.emplace_back("DepthCloud", "rviz/DepthCloud", "DepthCloud");
 
   TEMOTO_INFO_STREAM_("Visualization Manager is good to go.");
 }
