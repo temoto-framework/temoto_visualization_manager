@@ -26,6 +26,7 @@
 #include "rviz_plugin_manager/PluginGetConfig.h"
 #include "rviz_plugin_manager/PluginSetConfig.h"
 #include "temoto_er_manager/temoto_er_manager_services.h"
+#include <boost/filesystem/operations.hpp>
 
 namespace temoto_visualization_manager
 {
@@ -35,7 +36,8 @@ class VisualizationManager
 public:
   VisualizationManager();
 
-  VisualizationManager(std::string path_to_default_conf);
+  // VisualizationManager(std::string path_to_default_conf);
+  VisualizationManager(const std::string& config_base_path);
 
 private:
 
@@ -58,6 +60,10 @@ private:
   void erStatusCb(temoto_er_manager::LoadExtResource srv_msg
   , temoto_resource_registrar::Status status_msg);
 
+  void findPluginDescriptionFiles(boost::filesystem::path current_dir);
+
+  void readPluginDescription(const std::string& path_to_plugin_description);
+
   PluginInfo findPlugin(std::string plugin_type);
 
   std::map<std::string, int> active_requests_;
@@ -76,6 +82,9 @@ private:
   ros::ServiceClient get_plugin_config_client_;
 
   PluginInfoHandler plugin_info_handler_;
+
+  /// Name of the plugin description file
+  std::string description_file_= "plugin_description.yaml";
 };
 
 }  // namespace visualization_manager

@@ -1,8 +1,10 @@
 #include "temoto_visualization_manager/visualization_manager.h"
+#include <yaml-cpp/yaml.h>
+#include <fstream>
 
 namespace temoto_visualization_manager
 {
-VisualizationManager::VisualizationManager()
+VisualizationManager::VisualizationManager(const std::string& config_base_path)
 : resource_registrar_(srv_name::RVIZ_MANAGER)
 {
   /*
@@ -37,18 +39,23 @@ VisualizationManager::VisualizationManager()
    * Add some plugin entries to the "plugin_info_handler_". 
    * TODO: This should be done via external xml file or a service request
    */
-  plugin_info_handler_.plugins_.emplace_back("marker", "rviz/Marker");
-  plugin_info_handler_.plugins_.emplace_back("interactive_marker", "rviz/InteractiveMarkers", "Temoto marker");
-  plugin_info_handler_.plugins_.emplace_back("camera", "rviz_textured_sphere/SphereDisplay", "Temoto camera");
-  plugin_info_handler_.plugins_.emplace_back("image", "rviz/Image", "Temoto Image", "sensor_msgs/Image");
-  plugin_info_handler_.plugins_.emplace_back("compressed_image", "rviz/Image", "Temoto Compressed Image", "sensor_msgs/CompressedImage");
-  plugin_info_handler_.plugins_.emplace_back("depth image", "rviz/PointCloud2", "Temoto Pointcloud", "sensor_msgs/PointCloud2");
-  plugin_info_handler_.plugins_.emplace_back("laser_scan", "rviz/LaserScan", "Temoto Laser Scan", "sensor_msgs/LaserScan");
-  plugin_info_handler_.plugins_.emplace_back("path", "rviz/Path", "Path plugin", "");
-  plugin_info_handler_.plugins_.emplace_back("robot_model", "rviz/RobotModel", "Robot model plugin", "");
-  plugin_info_handler_.plugins_.emplace_back("manipulation", "moveit_rviz_plugin/MotionPlanning", "Moveit Motion Planning", "");
-  plugin_info_handler_.plugins_.emplace_back("map", "rviz/Map", "Map");
-  plugin_info_handler_.plugins_.emplace_back("DepthCloud", "rviz/DepthCloud", "DepthCloud");
+
+  
+  findPluginDescriptionFiles(config_base_path);
+
+  // plugin_info_handler_.plugins_.emplace_back("marker", "rviz/Marker");
+  // plugin_info_handler_.plugins_.emplace_back("interactive_marker", "rviz/InteractiveMarkers", "Temoto marker");
+  // plugin_info_handler_.plugins_.emplace_back("camera", "rviz_textured_sphere/SphereDisplay", "Temoto camera");
+  // plugin_info_handler_.plugins_.emplace_back("image", "rviz/Image", "Temoto Image", "sensor_msgs/Image");
+  // plugin_info_handler_.plugins_.emplace_back("compressed_image", "rviz/Image", "Temoto Compressed Image", "sensor_msgs/CompressedImage");
+  // plugin_info_handler_.plugins_.emplace_back("depth image", "rviz/PointCloud2", "Temoto Pointcloud", "sensor_msgs/PointCloud2");
+  // plugin_info_handler_.plugins_.emplace_back("laser_scan", "rviz/LaserScan", "Temoto Laser Scan", "sensor_msgs/LaserScan");
+  // plugin_info_handler_.plugins_.emplace_back("path", "rviz/Path", "Path plugin", "");
+  // plugin_info_handler_.plugins_.emplace_back("robot_model", "rviz/RobotModel", "Robot model plugin", "");
+  // plugin_info_handler_.plugins_.emplace_back("manipulation", "moveit_rviz_plugin/MotionPlanning", "Moveit Motion Planning", "");
+  // plugin_info_handler_.plugins_.emplace_back("map", "rviz/Map", "Map");
+  // plugin_info_handler_.plugins_.emplace_back("DepthCloud", "rviz/DepthCloud", "DepthCloud");
+  
 
   TEMOTO_INFO_STREAM_("Visualization Manager is good to go.");
 }
@@ -275,5 +282,83 @@ catch (resource_registrar::TemotoErrorStack e)
 {
   throw FWD_TEMOTO_ERRSTACK(e);
 }
+
+
+
+void VisualizationManager::findPluginDescriptionFiles(boost::filesystem::path current_dir)
+{ 
+  boost::filesystem::directory_iterator end_itr;
+  for ( boost::filesystem::directory_iterator itr( current_dir ); itr != end_itr; ++itr )
+  {
+    if (boost::filesystem::is_regular_file(*itr) && (itr->path().filename() == description_file_))
+    {
+      TEMOTO_INFO_STREAM_("NEW PLUGIN FILE FOUND");
+      TEMOTO_INFO_STREAM_(itr->path().string());   
+      readPluginDescription(itr->path().string());
+    }
+    else if ( boost::filesystem::is_directory(*itr) )
+    {
+      findPluginDescriptionFiles(*itr);
+    }
+  }
+}
+
+void VisualizationManager::readPluginDescription(const std::string& path_to_plugin_description)
+{
+  std::ifstream in(path_to_plugin_description);
+  YAML::Node yaml_config = YAML::Load(in);  
+
+ 
+  // Parse the Robots section
+  if (yaml_config["Plugins"])
+  {
+    YAML::Node plugins_config = yaml_config["Plugins"];
+
+    if (!plugins_config.IsSequence())
+    {
+      TEMOTO_WARN_("The given config does not contain sequence of plugins.");   
+    }
+
+    TEMOTO_INFO_STREAM_("===== PLUGINS IN THE CONFIG FILE %lu ", plugins_config.size());
+
+    for (YAML::const_iterator node_it = plugins_config.begin(); node_it != plugins_config.end(); ++node_it)
+    {    
+      if (!node_it->IsMap())
+      {
+        TEMOTO_ERROR_("Unable to parse the robot config. Parameters in YAML have to be specified in "
+                    "key-value pairs.");
+        continue;
+      }
+
+
+      // plugin_info_handler_.plugins_.emplace_back(node_it["type"],)node_it["class_name"];
+      // TEMOTO_INFO_STREAM_("===== "  , node_it["type"]);
+      // TEMOTO_INFO_STREAM_("===== "  , node_it["class_name"]);
+
+      
+    }
+
+
+    // plugins = 
+    // // local_configs_ = parseRobotConfigs(yaml_config);
+    // local_configs_ = parseRobotConfigs(yaml_config, local_configs_);
+    // // Debug what was added
+    // for (auto& config : local_configs_)
+    // {
+    //   TEMOTO_DEBUG_("Added robot: '%s'.", config->getName().c_str());
+    //   TEMOTO_DEBUG_STREAM_("CONFIG: \n" << config->toString());
+    // }
+    // // Advertise the parsed local robots
+    // advertiseConfigs(local_configs_);
+
+    // plugin_info_handler_.plugins_.emplace_back()
+  }
+  else
+  {
+    TEMOTO_INFO_STREAM_("No plugings defined");
+  }
+}
+
+
 
 }  // namespace visualization_manager
