@@ -283,8 +283,6 @@ catch (resource_registrar::TemotoErrorStack e)
   throw FWD_TEMOTO_ERRSTACK(e);
 }
 
-
-
 void VisualizationManager::findPluginDescriptionFiles(boost::filesystem::path current_dir)
 { 
   boost::filesystem::directory_iterator end_itr;
@@ -307,9 +305,7 @@ void VisualizationManager::readPluginDescription(const std::string& path_to_plug
 {
   std::ifstream in(path_to_plugin_description);
   YAML::Node yaml_config = YAML::Load(in);  
-
  
-  // Parse the Robots section
   if (yaml_config["Plugins"])
   {
     YAML::Node plugins_config = yaml_config["Plugins"];
@@ -319,46 +315,49 @@ void VisualizationManager::readPluginDescription(const std::string& path_to_plug
       TEMOTO_WARN_("The given config does not contain sequence of plugins.");   
     }
 
-    TEMOTO_INFO_STREAM_("===== PLUGINS IN THE CONFIG FILE %lu ", plugins_config.size());
-
     for (YAML::const_iterator node_it = plugins_config.begin(); node_it != plugins_config.end(); ++node_it)
-    {    
+    {
       if (!node_it->IsMap())
       {
-        TEMOTO_ERROR_("Unable to parse the robot config. Parameters in YAML have to be specified in "
+        TEMOTO_ERROR_("Unable to parse the plugins config. Parameters in YAML have to be specified in "
                     "key-value pairs.");
         continue;
       }
-
-
-      // plugin_info_handler_.plugins_.emplace_back(node_it["type"],)node_it["class_name"];
-      // TEMOTO_INFO_STREAM_("===== "  , node_it["type"]);
-      // TEMOTO_INFO_STREAM_("===== "  , node_it["class_name"]);
-
-      
+      const YAML::Node& plugin = *node_it;      
+      std::string rviz_name;
+      std::string data_type;
+      if (!plugin["type"] || !plugin["class_name"])
+      {
+        TEMOTO_WARN_("Invalid description of plugin, It does not contain a type or class_name");        
+      }
+      else 
+      {
+        if(plugin["rviz_name"])
+        {
+          rviz_name = plugin["rviz_name"].as<std::string>();
+        }
+        else
+        {
+          rviz_name = "temoto_" + plugin["type"].as<std::string>();
+        }
+        if(plugin["data_type"])
+        {
+          data_type = plugin["data_type"].as<std::string>();
+        }
+        else
+        {
+          data_type = "";
+        }
+        plugin_info_handler_.plugins_.emplace_back(plugin["type"].as<std::string>(),
+                                                  plugin["class_name"].as<std::string>(),
+                                                  rviz_name, data_type);
+      }
     }
-
-
-    // plugins = 
-    // // local_configs_ = parseRobotConfigs(yaml_config);
-    // local_configs_ = parseRobotConfigs(yaml_config, local_configs_);
-    // // Debug what was added
-    // for (auto& config : local_configs_)
-    // {
-    //   TEMOTO_DEBUG_("Added robot: '%s'.", config->getName().c_str());
-    //   TEMOTO_DEBUG_STREAM_("CONFIG: \n" << config->toString());
-    // }
-    // // Advertise the parsed local robots
-    // advertiseConfigs(local_configs_);
-
-    // plugin_info_handler_.plugins_.emplace_back()
   }
   else
   {
     TEMOTO_INFO_STREAM_("No plugings defined");
   }
 }
-
-
 
 }  // namespace visualization_manager
