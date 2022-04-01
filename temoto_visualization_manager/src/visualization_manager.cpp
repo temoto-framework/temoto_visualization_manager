@@ -35,27 +35,7 @@ VisualizationManager::VisualizationManager(const std::string& config_base_path)
   get_plugin_config_client_ = nh_.serviceClient<rviz_plugin_manager::PluginGetConfig>("rviz_plugin_get_config");
   set_plugin_config_client_ = nh_.serviceClient<rviz_plugin_manager::PluginSetConfig>("rviz_plugin_set_config");
 
-  /*
-   * Add some plugin entries to the "plugin_info_handler_". 
-   * TODO: This should be done via external xml file or a service request
-   */
-
-  
   findPluginDescriptionFiles(config_base_path);
-
-  // plugin_info_handler_.plugins_.emplace_back("marker", "rviz/Marker");
-  // plugin_info_handler_.plugins_.emplace_back("interactive_marker", "rviz/InteractiveMarkers", "Temoto marker");
-  // plugin_info_handler_.plugins_.emplace_back("camera", "rviz_textured_sphere/SphereDisplay", "Temoto camera");
-  // plugin_info_handler_.plugins_.emplace_back("image", "rviz/Image", "Temoto Image", "sensor_msgs/Image");
-  // plugin_info_handler_.plugins_.emplace_back("compressed_image", "rviz/Image", "Temoto Compressed Image", "sensor_msgs/CompressedImage");
-  // plugin_info_handler_.plugins_.emplace_back("depth image", "rviz/PointCloud2", "Temoto Pointcloud", "sensor_msgs/PointCloud2");
-  // plugin_info_handler_.plugins_.emplace_back("laser_scan", "rviz/LaserScan", "Temoto Laser Scan", "sensor_msgs/LaserScan");
-  // plugin_info_handler_.plugins_.emplace_back("path", "rviz/Path", "Path plugin", "");
-  // plugin_info_handler_.plugins_.emplace_back("robot_model", "rviz/RobotModel", "Robot model plugin", "");
-  // plugin_info_handler_.plugins_.emplace_back("manipulation", "moveit_rviz_plugin/MotionPlanning", "Moveit Motion Planning", "");
-  // plugin_info_handler_.plugins_.emplace_back("map", "rviz/Map", "Map");
-  // plugin_info_handler_.plugins_.emplace_back("DepthCloud", "rviz/DepthCloud", "DepthCloud");
-  
 
   TEMOTO_INFO_STREAM_("Visualization Manager is good to go.");
 }
@@ -63,6 +43,7 @@ VisualizationManager::VisualizationManager(const std::string& config_base_path)
 /* * * * * * * * * * * * * * * * *
  *  runRviz
  * * * * * * * * * * * * * * * * */
+
 void VisualizationManager::runRviz()
 try
 {
@@ -103,10 +84,10 @@ catch (...)
   throw TEMOTO_ERRSTACK("Failed to start RViz");
 }
 
-
 /* * * * * * * * * * * * * * * * *
  *  Load process status callback
  * * * * * * * * * * * * * * * * */
+
 void VisualizationManager::erStatusCb(temoto_er_manager::LoadExtResource srv_msg
 , temoto_resource_registrar::Status status_msg)
 {
@@ -116,6 +97,7 @@ void VisualizationManager::erStatusCb(temoto_er_manager::LoadExtResource srv_msg
 /* * * * * * * * * * * * * * * * *
  *  loadPluginRequest
  * * * * * * * * * * * * * * * * */
+
 bool VisualizationManager::loadPluginRequest(rviz_plugin_manager::PluginLoad& load_plugin_srv)
 {
   // Send the plugin request
