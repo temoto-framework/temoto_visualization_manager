@@ -1,4 +1,5 @@
 #include "temoto_visualization_manager/visualization_manager.h"
+#include <boost/filesystem/operations.hpp>
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 
@@ -207,11 +208,11 @@ try
   TEMOTO_INFO_STREAM_("Received a request to load a RViz plugin: " << req);
   runRviz();
 
-  // Check the type of the requested display plugin and run if found
+  // Check the class_name of the requested display plugin and run if found
   PluginInfo plugin_info;
 
   // Create the message and fill out the request part
-  if (plugin_info_handler_.findPlugin(req.type, plugin_info))
+  if (plugin_info_handler_.findPlugin(req.class_name, plugin_info))
   {
     rviz_plugin_manager::PluginLoad load_plugin_srv;
     load_plugin_srv.request.plugin_class = plugin_info.getClassName();
@@ -265,7 +266,7 @@ catch (resource_registrar::TemotoErrorStack e)
   throw FWD_TEMOTO_ERRSTACK(e);
 }
 
-void VisualizationManager::findPluginDescriptionFiles(boost::filesystem::path current_dir)
+void VisualizationManager::findPluginDescriptionFiles(const std::string& current_dir)
 { 
   boost::filesystem::directory_iterator end_itr;
   for ( boost::filesystem::directory_iterator itr( current_dir ); itr != end_itr; ++itr )
@@ -278,7 +279,7 @@ void VisualizationManager::findPluginDescriptionFiles(boost::filesystem::path cu
     }
     else if ( boost::filesystem::is_directory(*itr) )
     {
-      findPluginDescriptionFiles(*itr);
+      findPluginDescriptionFiles(itr->path().string());
     }
   }
 }
@@ -308,9 +309,9 @@ void VisualizationManager::readPluginDescription(const std::string& path_to_plug
       const YAML::Node& plugin = *node_it;      
       std::string rviz_name;
       std::string data_type;
-      if (!plugin["type"] || !plugin["class_name"])
+      if (!plugin["class_name"])
       {
-        TEMOTO_WARN_("Invalid description of plugin, It does not contain a type or class_name");        
+        TEMOTO_WARN_("Invalid description of plugin, It does not contain a class_name");        
       }
       else 
       {
@@ -318,10 +319,7 @@ void VisualizationManager::readPluginDescription(const std::string& path_to_plug
         {
           rviz_name = plugin["rviz_name"].as<std::string>();
         }
-        else
-        {
-          rviz_name = "temoto_" + plugin["type"].as<std::string>();
-        }
+        
         if(plugin["data_type"])
         {
           data_type = plugin["data_type"].as<std::string>();
@@ -330,9 +328,9 @@ void VisualizationManager::readPluginDescription(const std::string& path_to_plug
         {
           data_type = "";
         }
-        plugin_info_handler_.plugins_.emplace_back(plugin["type"].as<std::string>(),
-                                                  plugin["class_name"].as<std::string>(),
-                                                  rviz_name, data_type);
+        plugin_info_handler_.plugins_.emplace_back(plugin["class_name"].as<std::string>(),
+                                                  rviz_name, 
+                                                  data_type);
       }
     }
   }

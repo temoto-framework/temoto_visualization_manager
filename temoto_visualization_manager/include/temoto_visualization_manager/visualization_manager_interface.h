@@ -65,7 +65,7 @@ public:
     return std::rand();
   }
 
-  LoadRvizPlugin loadRvizPlugin(std::string display_type
+  LoadRvizPlugin loadRvizPlugin(std::string display_class
   , std::string topic = ""
   , std::string display_config = ""
   , std::string temoto_namespace = "")
@@ -73,7 +73,7 @@ public:
   {
     validateInterface();
     LoadRvizPlugin load_resource_msg;
-    load_resource_msg.request.type = display_type;
+    load_resource_msg.request.class_name = display_class;
     load_resource_msg.request.topic = topic;
     load_resource_msg.request.config = display_config;
 
@@ -102,7 +102,7 @@ public:
     }
     else
     {
-      throw TEMOTO_ERRSTACK("Cannot unload plugin " + load_resource_msg.request.name + " because it is not loaded yet");
+      throw TEMOTO_ERRSTACK("Cannot unload plugin " + load_resource_msg.request.class_name + " because it is not loaded yet");
     }
   }
   catch (resource_registrar::TemotoErrorStack e)
@@ -110,14 +110,14 @@ public:
     throw FWD_TEMOTO_ERRSTACK(e);
   }
 
-  void unloadRvizPlugin(std::string display_type
+  void unloadRvizPlugin(std::string display_class
   , std::string topic = ""
   , std::string display_config = "")
   try
   {
     validateInterface();
     temoto_visualization_manager::LoadRvizPlugin::Request req;
-    req.type = display_type;
+    req.class_name = display_class;
     req.topic = topic;
     req.config = display_config;
 
@@ -134,7 +134,7 @@ public:
     }
     else
     {
-      throw TEMOTO_ERRSTACK("Cannot unload plugin " + req.name + " because it is not loaded yet");
+      throw TEMOTO_ERRSTACK("Cannot unload plugin " + req.class_name + " because it is not loaded yet");
     }
   }
   catch (resource_registrar::TemotoErrorStack e)

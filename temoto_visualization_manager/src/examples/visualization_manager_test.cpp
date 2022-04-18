@@ -31,7 +31,7 @@ int main(int argc, char** argv)
    */
   std::string topic_name_1 = "my/stream/topic_1";
   ROS_INFO_STREAM("Asking the visualization manager to show camera stream on topic '" << topic_name_1 << "'");
-  auto plugin_handle_1 = vmi.loadRvizPlugin("image", topic_name_1);
+  auto plugin_handle_1 = vmi.loadRvizPlugin("rviz/Image", topic_name_1);
   ros::Duration(6).sleep();
 
   /*
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
    */
   std::string topic_name_2 = "my/scan/topic_1";
   ROS_INFO_STREAM("Asking the visualization manager to show LIDAR stream on topic '" << topic_name_2 << "'");
-  auto plugin_handle_2 = vmi.loadRvizPlugin("laser_scan", topic_name_2);
+  auto plugin_handle_2 = vmi.loadRvizPlugin("rviz/LaserScan", topic_name_2);
   ros::Duration(6).sleep();
 
   /*

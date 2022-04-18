@@ -20,10 +20,9 @@ PluginInfo::PluginInfo (std::string type, std::string class_name, std::string rv
 }
 */
 
-PluginInfo::PluginInfo (std::string type, std::string class_name,
+PluginInfo::PluginInfo (std::string class_name,
 	   					std::string rviz_name, std::string data_type)
     :
-    type_(type),
     class_name_(class_name),
     data_type_(data_type),
     rviz_name_(rviz_name),
@@ -38,11 +37,6 @@ void PluginInfo::setDescription (std::string description)
 void PluginInfo::setRvizName (std::string rviz_name)
 {
     this->rviz_name_ = rviz_name;
-}
-
-std::string PluginInfo::getType ()
-{
-    return this-> type_;
 }
 
 std::string PluginInfo::getClassName ()
@@ -70,23 +64,23 @@ std::string PluginInfo::getDescription ()
  * PluginInfoHandler implementations
  */
 
-std::vector <PluginInfo> PluginInfoHandler::findPlugins ( std::string plugin_type )
+std::vector <PluginInfo> PluginInfoHandler::findPlugins ( std::string plugin_class )
 {
     // Empty PluginInfo vector
     std::vector <PluginInfo> plugin_info_return;
 
     for (auto& plugin : this->plugins_)
     {
-        if (plugin.getType() == plugin_type)
+        if (plugin.getClassName() == plugin_class)
             plugin_info_return.push_back( plugin );
     }
 
     return plugin_info_return;
 }
 
-bool PluginInfoHandler::findPlugin ( std::string plugin_type, PluginInfo& plugin_info)
+bool PluginInfoHandler::findPlugin ( std::string plugin_class, PluginInfo& plugin_info)
 {
-    std::vector <PluginInfo> plugins = findPlugins( plugin_type );
+    std::vector <PluginInfo> plugins = findPlugins( plugin_class );
 
     if ( plugins.size() > 0 )
     {

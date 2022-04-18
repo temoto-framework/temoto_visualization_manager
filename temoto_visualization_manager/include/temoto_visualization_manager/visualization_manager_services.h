@@ -34,8 +34,7 @@ static bool operator==(const temoto_visualization_manager::LoadRvizPlugin::Reque
 		const temoto_visualization_manager::LoadRvizPlugin::Request& r2)
 {
 	return(
-			r1.type == r2.type &&
-			r1.name == r2.name &&
+			r1.class_name == r2.class_name &&
 			r1.topic == r2.topic &&
 			r1.config == r2.config
 		  );
