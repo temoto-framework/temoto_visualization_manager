@@ -1,8 +1,5 @@
 # Rviz display plugin type
-string type
-
-# Rviz display plugin name
-string name
+string class_name
 
 # Topic that is used to send info to rviz plugin
 string topic

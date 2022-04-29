@@ -35,16 +35,13 @@ public:
 
  //   PluginInfo (std::string type, std::string class_name, std::string rviz_name);
 
-    PluginInfo (std::string type,
-                std::string class_name,
+    PluginInfo (std::string class_name,
                 std::string rviz_name = "",
                 std::string data_type = "");
 
     void setDescription (std::string description);
 
     void setRvizName (std::string rviz_name);
-
-    std::string getType ();
 
     std::string getClassName ();
 
@@ -56,11 +53,6 @@ public:
 
 private:
 
-    /**
-     * @brief Type of the plugin, e.g., "Hand tracker", "LIDAR", etc.
-     */
-    std::string type_;
-	
     /**
      * @brief Name of the plugin
      */
@@ -89,18 +81,18 @@ public:
 
     /**
      * @brief Returns the first plugin that satisfies the "plugin type" condition
-     * @param plugin_type
+     * @param plugin_class
      * @param plugin_info
      * @return
      */
-    bool findPlugin ( std::string plugin_type, PluginInfo& plugin_info);
+    bool findPlugin ( std::string plugin_class, PluginInfo& plugin_info);
 
     /**
      * @brief Returns a vector of plugins if the "plugin type" condition is satisfied
      * @param plugin_type
      * @return
      */
-    std::vector <PluginInfo> findPlugins ( std::string plugin_type );
+    std::vector <PluginInfo> findPlugins ( std::string plugin_class );
 
     std::vector<PluginInfo> plugins_;
 };

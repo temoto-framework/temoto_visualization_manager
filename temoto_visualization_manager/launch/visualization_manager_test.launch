@@ -2,6 +2,7 @@
 <launch>
   <arg name="temoto_namespace" default="my_temoto"/>
   <env name="TEMOTO_NAMESPACE" value="$(arg temoto_namespace)" />
+  <arg name="plugin_config_base_path" default="$(find temoto_visualization_manager)/src/examples" />
 
   <group ns="$(arg temoto_namespace)">
     <!-- Run the Process Manager (which is used to start RViz) -->
@@ -14,7 +15,8 @@
     <node pkg="temoto_visualization_manager" 
           type="temoto_visualization_manager" 
           name="temoto_visualization_manager" 
-          output="screen"/>
+          output="screen"
+          args="--config-base-path $(arg plugin_config_base_path)"/>
 
     <!-- Run the test node -->
     <node pkg="temoto_visualization_manager" 
@@ -23,3 +25,4 @@
           output="screen"/>
   </group>
 </launch>
+

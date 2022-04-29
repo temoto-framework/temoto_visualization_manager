@@ -1,0 +1,8 @@
+Plugins:
+- class_name: "rviz/Image"
+  rviz_name: "Temoto Image"
+  data_type: "sensor_msgs/Image"
+
+- class_name: "rviz/LaserScan"
+  rviz_name: "Temoto Laser Scan"
+  data_type: "sensor_msgs/LaserScan"

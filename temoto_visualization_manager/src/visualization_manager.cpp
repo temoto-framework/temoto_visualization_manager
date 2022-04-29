@@ -1,8 +1,11 @@
 #include "temoto_visualization_manager/visualization_manager.h"
+#include <boost/filesystem/operations.hpp>
+#include <yaml-cpp/yaml.h>
+#include <fstream>
 
 namespace temoto_visualization_manager
 {
-VisualizationManager::VisualizationManager()
+VisualizationManager::VisualizationManager(const std::string& config_base_path)
 : resource_registrar_(srv_name::RVIZ_MANAGER)
 {
   /*
@@ -33,19 +36,7 @@ VisualizationManager::VisualizationManager()
   get_plugin_config_client_ = nh_.serviceClient<rviz_plugin_manager::PluginGetConfig>("rviz_plugin_get_config");
   set_plugin_config_client_ = nh_.serviceClient<rviz_plugin_manager::PluginSetConfig>("rviz_plugin_set_config");
 
-  /*
-   * Add some plugin entries to the "plugin_info_handler_". 
-   * TODO: This should be done via external xml file or a service request
-   */
-  plugin_info_handler_.plugins_.emplace_back("marker", "rviz/Marker");
-  plugin_info_handler_.plugins_.emplace_back("camera", "rviz_textured_sphere/SphereDisplay", "Temoto camera");
-  plugin_info_handler_.plugins_.emplace_back("image", "rviz/Image", "Temoto Image", "sensor_msgs/Image");
-  plugin_info_handler_.plugins_.emplace_back("compressed_image", "rviz/Image", "Temoto Compressed Image", "sensor_msgs/CompressedImage");
-  plugin_info_handler_.plugins_.emplace_back("depth image", "rviz/PointCloud2", "Temoto Pointcloud", "sensor_msgs/PointCloud2");
-  plugin_info_handler_.plugins_.emplace_back("laser_scan", "rviz/LaserScan", "Temoto Laser Scan", "sensor_msgs/LaserScan");
-  plugin_info_handler_.plugins_.emplace_back("path", "rviz/Path", "Path plugin", "");
-  plugin_info_handler_.plugins_.emplace_back("robot_model", "rviz/RobotModel", "Robot model plugin", "");
-  plugin_info_handler_.plugins_.emplace_back("manipulation", "moveit_rviz_plugin/MotionPlanning", "Moveit Motion Planning", "");
+  findPluginDescriptionFiles(config_base_path);
 
   TEMOTO_INFO_STREAM_("Visualization Manager is good to go.");
 }
@@ -53,6 +44,7 @@ VisualizationManager::VisualizationManager()
 /* * * * * * * * * * * * * * * * *
  *  runRviz
  * * * * * * * * * * * * * * * * */
+
 void VisualizationManager::runRviz()
 try
 {
@@ -93,10 +85,10 @@ catch (...)
   throw TEMOTO_ERRSTACK("Failed to start RViz");
 }
 
-
 /* * * * * * * * * * * * * * * * *
  *  Load process status callback
  * * * * * * * * * * * * * * * * */
+
 void VisualizationManager::erStatusCb(temoto_er_manager::LoadExtResource srv_msg
 , temoto_resource_registrar::Status status_msg)
 {
@@ -106,6 +98,7 @@ void VisualizationManager::erStatusCb(temoto_er_manager::LoadExtResource srv_msg
 /* * * * * * * * * * * * * * * * *
  *  loadPluginRequest
  * * * * * * * * * * * * * * * * */
+
 bool VisualizationManager::loadPluginRequest(rviz_plugin_manager::PluginLoad& load_plugin_srv)
 {
   // Send the plugin request
@@ -215,11 +208,11 @@ try
   TEMOTO_INFO_STREAM_("Received a request to load a RViz plugin: " << req);
   runRviz();
 
-  // Check the type of the requested display plugin and run if found
+  // Check the class_name of the requested display plugin and run if found
   PluginInfo plugin_info;
 
   // Create the message and fill out the request part
-  if (plugin_info_handler_.findPlugin(req.type, plugin_info))
+  if (plugin_info_handler_.findPlugin(req.class_name, plugin_info))
   {
     rviz_plugin_manager::PluginLoad load_plugin_srv;
     load_plugin_srv.request.plugin_class = plugin_info.getClassName();
@@ -271,6 +264,80 @@ try
 catch (resource_registrar::TemotoErrorStack e)
 {
   throw FWD_TEMOTO_ERRSTACK(e);
+}
+
+void VisualizationManager::findPluginDescriptionFiles(const std::string& current_dir)
+{ 
+  boost::filesystem::directory_iterator end_itr;
+  for ( boost::filesystem::directory_iterator itr( current_dir ); itr != end_itr; ++itr )
+  {
+    if (boost::filesystem::is_regular_file(*itr) && (itr->path().filename() == description_file_))
+    {
+      TEMOTO_INFO_STREAM_("NEW PLUGIN FILE FOUND");
+      TEMOTO_INFO_STREAM_(itr->path().string());   
+      readPluginDescription(itr->path().string());
+    }
+    else if ( boost::filesystem::is_directory(*itr) )
+    {
+      findPluginDescriptionFiles(itr->path().string());
+    }
+  }
+}
+
+void VisualizationManager::readPluginDescription(const std::string& path_to_plugin_description)
+{
+  std::ifstream in(path_to_plugin_description);
+  YAML::Node yaml_config = YAML::Load(in);  
+ 
+  if (yaml_config["Plugins"])
+  {
+    YAML::Node plugins_config = yaml_config["Plugins"];
+
+    if (!plugins_config.IsSequence())
+    {
+      TEMOTO_WARN_("The given config does not contain sequence of plugins.");   
+    }
+
+    for (YAML::const_iterator node_it = plugins_config.begin(); node_it != plugins_config.end(); ++node_it)
+    {
+      if (!node_it->IsMap())
+      {
+        TEMOTO_ERROR_("Unable to parse the plugins config. Parameters in YAML have to be specified in "
+                    "key-value pairs.");
+        continue;
+      }
+      const YAML::Node& plugin = *node_it;      
+      std::string rviz_name;
+      std::string data_type;
+      if (!plugin["class_name"])
+      {
+        TEMOTO_WARN_("Invalid description of plugin, It does not contain a class_name");        
+      }
+      else 
+      {
+        if(plugin["rviz_name"])
+        {
+          rviz_name = plugin["rviz_name"].as<std::string>();
+        }
+        
+        if(plugin["data_type"])
+        {
+          data_type = plugin["data_type"].as<std::string>();
+        }
+        else
+        {
+          data_type = "";
+        }
+        plugin_info_handler_.plugins_.emplace_back(plugin["class_name"].as<std::string>(),
+                                                  rviz_name, 
+                                                  data_type);
+      }
+    }
+  }
+  else
+  {
+    TEMOTO_INFO_STREAM_("No plugings defined");
+  }
 }
 
 }  // namespace visualization_manager

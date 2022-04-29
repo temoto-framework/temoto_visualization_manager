@@ -17,6 +17,7 @@ find_package(catkin REQUIRED
   message_runtime
   rviz_plugin_manager
   cmake_modules
+  yaml-cpp
 )
 
 add_service_files(FILES
@@ -39,6 +40,7 @@ catkin_package(
     rviz_plugin_manager 
     temoto_resource_registrar
     temoto_er_manager
+    yaml-cpp
   DEPENDS 
 )
 
