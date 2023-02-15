@@ -25,7 +25,7 @@
 #include "rviz_plugin_manager/PluginUnload.h"
 #include "rviz_plugin_manager/PluginGetConfig.h"
 #include "rviz_plugin_manager/PluginSetConfig.h"
-#include "temoto_er_manager/temoto_er_manager_services.h"
+#include "temoto_process_manager/process_manager_services.hpp"
 
 namespace temoto_visualization_manager
 {
@@ -56,8 +56,8 @@ private:
   void unloadRvizPluginCb(temoto_visualization_manager::LoadRvizPlugin::Request& req,
                           temoto_visualization_manager::LoadRvizPlugin::Response& res);
 
-  void erStatusCb(temoto_er_manager::LoadExtResource srv_msg
-  , temoto_resource_registrar::Status status_msg);
+  void erStatusCb(temoto_process_manager::LoadProcess srv_msg,
+    temoto_resource_registrar::Status status_msg);
 
   void findPluginDescriptionFiles(const std::string& current_dir);
 

@@ -6,9 +6,9 @@
 
   <group ns="$(arg temoto_namespace)">
     <!-- Run the Process Manager (which is used to start RViz) -->
-    <node pkg="temoto_er_manager" 
-          type="temoto_er_manager" 
-          name="temoto_er_manager" 
+    <node pkg="temoto_process_manager" 
+          type="temoto_process_manager" 
+          name="temoto_process_manager" 
           output="screen"/>
 
     <!-- Run the Visualzation Manager -->
