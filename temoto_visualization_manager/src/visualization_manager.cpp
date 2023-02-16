@@ -49,15 +49,15 @@ void VisualizationManager::runRviz()
 try
 {
   // Create the message and fill out the request part
-  temoto_er_manager::LoadExtResource load_er_msg;
-  load_er_msg.request.action = temoto_er_manager::action::ROS_EXECUTE;
+  temoto_process_manager::LoadProcess load_er_msg;
+  load_er_msg.request.action = temoto_process_manager::action::ROS_EXECUTE;
   load_er_msg.request.package_name = "rviz_plugin_manager";
   load_er_msg.request.executable = "rviz_plugin_manager.launch";
 
   TEMOTO_DEBUG_("Requesting to launch rviz ...");
 
-  resource_registrar_.call<temoto_er_manager::LoadExtResource>(temoto_er_manager::srv_name::MANAGER
-  , temoto_er_manager::srv_name::SERVER
+  resource_registrar_.call<temoto_process_manager::LoadProcess>(temoto_process_manager::srv_name::MANAGER
+  , temoto_process_manager::srv_name::SERVER
   , load_er_msg
   , std::bind(&VisualizationManager::erStatusCb, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -89,7 +89,7 @@ catch (...)
  *  Load process status callback
  * * * * * * * * * * * * * * * * */
 
-void VisualizationManager::erStatusCb(temoto_er_manager::LoadExtResource srv_msg
+void VisualizationManager::erStatusCb(temoto_process_manager::LoadProcess srv_msg
 , temoto_resource_registrar::Status status_msg)
 {
   TEMOTO_WARN_STREAM_("Received a resource status message: " << status_msg.message_);

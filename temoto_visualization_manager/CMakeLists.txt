@@ -10,7 +10,7 @@ endif()
 
 find_package(catkin REQUIRED
   temoto_resource_registrar
-  temoto_er_manager
+  temoto_process_manager
   roscpp
   std_msgs
   message_generation
@@ -39,7 +39,7 @@ catkin_package(
     cmake_modules
     rviz_plugin_manager 
     temoto_resource_registrar
-    temoto_er_manager
+    temoto_process_manager
     yaml-cpp
   DEPENDS 
 )
