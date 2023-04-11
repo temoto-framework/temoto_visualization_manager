@@ -1,6 +1,9 @@
 # Rviz display plugin type
 string class_name
 
+# Name of the plugin in RViz plugins panel. Set do default if left empty
+string displayed_name
+
 # Topic that is used to send info to rviz plugin
 string topic
 

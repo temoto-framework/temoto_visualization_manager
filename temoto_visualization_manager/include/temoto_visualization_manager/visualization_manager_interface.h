@@ -68,6 +68,7 @@ public:
   LoadRvizPlugin loadRvizPlugin(std::string display_class
   , std::string topic = ""
   , std::string display_config = ""
+  , std::string displayed_name = ""
   , std::string temoto_namespace = "")
   try
   {
@@ -76,6 +77,7 @@ public:
     load_resource_msg.request.class_name = display_class;
     load_resource_msg.request.topic = topic;
     load_resource_msg.request.config = display_config;
+    load_resource_msg.request.displayed_name = displayed_name;
 
     resource_registrar_->call<LoadRvizPlugin>(srv_name::RVIZ_MANAGER
     , srv_name::RVIZ_SERVER

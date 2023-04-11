@@ -219,7 +219,7 @@ try
     load_plugin_srv.request.plugin_topic = req.topic;
     load_plugin_srv.request.plugin_config = req.config;
     load_plugin_srv.request.plugin_data_type = plugin_info.getDataType();
-    load_plugin_srv.request.plugin_name = plugin_info.getRvizName();
+    load_plugin_srv.request.plugin_name = (req.displayed_name.empty()) ? plugin_info.getRvizName() : req.displayed_name;
 
     loadPluginRequest(load_plugin_srv);
 
