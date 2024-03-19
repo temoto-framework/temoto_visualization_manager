@@ -17,7 +17,7 @@
 #ifndef TEMOTO_VISUALIZATION_MANAGER__RVIZ_MANAGER_H
 #define TEMOTO_VISUALIZATION_MANAGER__RVIZ_MANAGER_H
 
-#include "rr/ros1_resource_registrar.h"
+#include "temoto_resource_registrar/ros1_resource_registrar.h"
 #include "temoto_visualization_manager/LoadRvizPlugin.h"
 #include "temoto_visualization_manager/plugin_info.h"
 #include "temoto_visualization_manager/visualization_manager_services.h"
